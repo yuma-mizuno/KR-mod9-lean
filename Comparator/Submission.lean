@@ -7,11 +7,11 @@ infinite products are matched explicitly to the production definitions. -/
 set_option autoImplicit false
 set_option backward.isDefEq.respectTransparency false
 open PowerSeries PowerSeries.WithPiTopology
-open scoped DiscreteUniformity QTheory
+open scoped DiscreteUniformity QTheory Ring
 namespace KRChallenge.Submitted
 
 private theorem inverse_eq_bInv_of_isUnit {R : Type*} [MonoidWithZero R] {x : R}
-    (h : IsUnit x) : Ring.inverse x = bInv x := by
+    (h : IsUnit x) : x⁻¹ʳ = bInv x := by
   rw [Ring.inverse_of_isUnit h, h.bInv_eq_inv_unit]
 
 private theorem finite_product (d m : ℕ) :
@@ -80,21 +80,21 @@ theorem kr₃ : KR₃ := by
   rw [summand_eq,product₃_eq]
   exact KanadeRussell.kanade_russell_hasSum₃
 
-/-! ## Auxiliary checks: initial product coefficients -/
+/-! ## Auxiliary checks: initial product expansions -/
 
-/-- The first product is `1 + q + q²` through degree two. -/
+/-- The first product has expansion `1 + q + q² + O(q³)`. -/
 theorem product₁_initial_coefficients :
     coeff 0 product₁ = 1 ∧ coeff 1 product₁ = 1 ∧ coeff 2 product₁ = 1 := by
   rw [product₁_eq]
   exact KanadeRussell.Product.K₁_initial_coefficients
 
-/-- The second product is `1 + q²` through degree two. -/
+/-- The second product has expansion `1 + q² + O(q³)`. -/
 theorem product₂_initial_coefficients :
     coeff 0 product₂ = 1 ∧ coeff 1 product₂ = 0 ∧ coeff 2 product₂ = 1 := by
   rw [product₂_eq]
   exact KanadeRussell.Product.K₂_initial_coefficients
 
-/-- The third product is `1` through degree two. -/
+/-- The third product has expansion `1 + O(q³)`. -/
 theorem product₃_initial_coefficients :
     coeff 0 product₃ = 1 ∧ coeff 1 product₃ = 0 ∧ coeff 2 product₃ = 0 := by
   rw [product₃_eq]

@@ -75,19 +75,19 @@ private theorem restricted_two_third :
   rw [he] at hh
   norm_num at hh
 
-/-- The coefficients of `K₁` in degrees 0, 1, 2 are `(1, 1, 1)`. -/
+/-- `K₁ = 1 + q + q² + O(q³)`. -/
 theorem K₁_initial_coefficients : coeff 0 K₁ = 1 ∧ coeff 1 K₁ = 1 ∧ coeff 2 K₁ = 1 := by
   simp only [Partitions.coeff_K₁]
   rw [restricted_two_first]
   norm_num [Nat.Partition.restricted]
 
-/-- The coefficients of `K₂` in degrees 0, 1, 2 are `(1, 0, 1)`. -/
+/-- `K₂ = 1 + q² + O(q³)`. -/
 theorem K₂_initial_coefficients : coeff 0 K₂ = 1 ∧ coeff 1 K₂ = 0 ∧ coeff 2 K₂ = 1 := by
   simp only [Partitions.coeff_K₂]
   rw [restricted_two_second]
   norm_num [Nat.Partition.restricted]
 
-/-- The coefficients of `K₃` in degrees 0, 1, 2 are `(1, 0, 0)`. -/
+/-- `K₃ = 1 + O(q³)`. -/
 theorem K₃_initial_coefficients : coeff 0 K₃ = 1 ∧ coeff 1 K₃ = 0 ∧ coeff 2 K₃ = 0 := by
   simp only [Partitions.coeff_K₃]
   rw [restricted_two_third]
