@@ -25,6 +25,15 @@ jobs:
       LEAN4EXPORT_REF: 8554815c2dc6b7abe99ec1f08849c9759ba77947
       COMPARATOR_REF: fd2e25de155523dbce1f35d410511f9f63998461
     steps:
+      # The Lean cache and verifier toolchains exceed the runner's default free space.
+      # These preinstalled SDKs are not used by the Lean, Python, or Go checks.
+      - name: Free runner disk space
+        run: |
+          df -h /
+          sudo rm -rf -- /usr/local/lib/android /usr/share/dotnet \
+            /usr/local/.ghcup /opt/ghc /opt/hostedtoolcache/CodeQL
+          df -h /
+
       - name: Check out project
         uses: actions/checkout@v6
 
@@ -62,6 +71,11 @@ jobs:
 
       - name: Test the local Comparator checker
         run: python scripts/test_check_comparator.py
+
+      - name: Check disk before verifier setup
+        run: |
+          df -h "$GITHUB_WORKSPACE"
+          du -sh .lake/packages .lake/build
 
       - name: Restore verifier binaries
         id: verifier-cache
