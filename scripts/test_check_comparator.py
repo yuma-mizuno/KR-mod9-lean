@@ -72,6 +72,20 @@ class ComparatorGateTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             checker.validate_problem_copy(challenge, changed)
 
+    def test_matching_copies_cannot_add_challenge_imports(self):
+        challenge = (ROOT/'Challenge.lean').read_text(encoding='utf-8-sig')
+        problem = (ROOT/'Comparator/Problem.lean').read_text(encoding='utf-8-sig')
+        checker.validate_problem_copy(challenge, problem)
+        for extra in ('RogersRamanujan', 'KanadeRussell.Theorems',
+                      'RogersRamanujan KanadeRussell.Theorems'):
+            with self.subTest(imports=extra):
+                changed_challenge = 'import ' + extra + '\n' + challenge
+                changed_problem = 'import ' + extra + '\n' + problem
+                self.assertEqual(checker.canonical(checker.target_headers(changed_challenge)),
+                                 checker.canonical(changed_problem))
+                with self.assertRaisesRegex(ValueError, 'import only Mathlib'):
+                    checker.validate_problem_copy(changed_challenge, changed_problem)
+
     def test_nested_comments_and_string_literals(self):
         self.assertEqual(checker.canonical('def x := 1 /- outer /- inner -/ end -/ -- tail\n'), 'def x := 1')
         self.assertEqual(checker.canonical('def s := "/- not a comment -/"'), 'def s := "/- not a comment -/"')

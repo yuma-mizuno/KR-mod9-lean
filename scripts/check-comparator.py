@@ -97,9 +97,11 @@ def validate_problem_copy(challenge, problem):
     prefix = target_headers(challenge)
     if canonical(prefix) != canonical(problem):
         raise ValueError('Submission definitions differ from the independently stated Challenge.lean')
-    imports = re.findall(r'^import (\S+)\s*$', without_comments(challenge), re.M)
-    if imports != ['Mathlib', 'RogersRamanujan']:
-        raise ValueError('The challenge must import only Mathlib and RogersRamanujan')
+    imports = [module for line in re.findall(
+        r'^[ \t]*import[ \t]+([^\n]+)', without_comments(challenge), re.M)
+        for module in line.split()]
+    if imports != ['Mathlib']:
+        raise ValueError('The challenge must import only Mathlib')
 
 
 def validate_sources(root):

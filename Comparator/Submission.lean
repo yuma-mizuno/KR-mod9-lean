@@ -10,6 +10,10 @@ open PowerSeries PowerSeries.WithPiTopology
 open scoped DiscreteUniformity QTheory
 namespace KRChallenge.Submitted
 
+private theorem inverse_eq_bInv_of_isUnit {R : Type*} [MonoidWithZero R] {x : R}
+    (h : IsUnit x) : Ring.inverse x = bInv x := by
+  rw [Ring.inverse_of_isUnit h, h.bInv_eq_inv_unit]
+
 private theorem finite_product (d m : ℕ) :
     (∏ j ∈ Finset.range m, (1-q^(d*(j+1)))) = (q^d;q^d)_m := by
   unfold qPochhammer
@@ -25,6 +29,11 @@ private theorem summand_eq (a b : ℕ) : summand a b = KanadeRussell.sourceTerm 
     simpa only [one_mul,pow_one] using finite_product 1 m
   dsimp only [summand]
   rw [h1,finite_product]
+  have hu1 : IsUnit (q;q)_m := by
+    simpa only [Nat.zero_add,pow_one,q,KanadeRussell.q] using
+      KanadeRussell.isUnit_qPochhammer_q 0 m
+  have hu3 : IsUnit (q^3;q^3)_n := KanadeRussell.isUnit_qPochhammer_q 2 n
+  rw [inverse_eq_bInv_of_isUnit hu1,inverse_eq_bInv_of_isUnit hu3]
   rfl
 
 private theorem hasProd_progression (r : ℕ) :
@@ -36,17 +45,23 @@ private theorem hasProd_progression (r : ℕ) :
   simp only [← pow_mul,← pow_add]
   rw [Nat.add_comm]
 
-private theorem reciprocalProduct_eq (r₁ r₂ r₃ r₄ : ℕ) :
+private theorem reciprocalProduct_eq (r₁ r₂ r₃ r₄ : ℕ)
+    (h₁ : 0<r₁) (h₂ : 0<r₂) (h₃ : 0<r₃) (h₄ : 0<r₄) :
     reciprocalProduct r₁ r₂ r₃ r₄ =
       bInv (KanadeRussell.P9 r₁*KanadeRussell.P9 r₂*KanadeRussell.P9 r₃*KanadeRussell.P9 r₄) := by
   unfold reciprocalProduct
-  congr 1
-  exact (((hasProd_progression r₁).mul (hasProd_progression r₂)).mul
-    (hasProd_progression r₃) |>.mul (hasProd_progression r₄)).tprod_eq
+  rw [(((hasProd_progression r₁).mul (hasProd_progression r₂)).mul
+    (hasProd_progression r₃) |>.mul (hasProd_progression r₄)).tprod_eq]
+  apply inverse_eq_bInv_of_isUnit
+  exact (((KanadeRussell.isUnit_P9 r₁ h₁).mul (KanadeRussell.isUnit_P9 r₂ h₂)).mul
+    (KanadeRussell.isUnit_P9 r₃ h₃)).mul (KanadeRussell.isUnit_P9 r₄ h₄)
 
-private theorem product₁_eq : product₁ = KanadeRussell.K₁ := reciprocalProduct_eq 1 3 6 8
-private theorem product₂_eq : product₂ = KanadeRussell.K₂ := reciprocalProduct_eq 2 3 6 7
-private theorem product₃_eq : product₃ = KanadeRussell.K₃ := reciprocalProduct_eq 3 4 5 6
+private theorem product₁_eq : product₁ = KanadeRussell.K₁ :=
+  reciprocalProduct_eq 1 3 6 8 (by decide) (by decide) (by decide) (by decide)
+private theorem product₂_eq : product₂ = KanadeRussell.K₂ :=
+  reciprocalProduct_eq 2 3 6 7 (by decide) (by decide) (by decide) (by decide)
+private theorem product₃_eq : product₃ = KanadeRussell.K₃ :=
+  reciprocalProduct_eq 3 4 5 6 (by decide) (by decide) (by decide) (by decide)
 
 /-! ## Main challenge: full double-sum/product identities -/
 

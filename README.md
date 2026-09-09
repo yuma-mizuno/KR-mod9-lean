@@ -36,7 +36,8 @@ KR identities: `Challenge.kr₁`, `Challenge.kr₂`, and `Challenge.kr₃`, each
 `HasSum` form. It also includes three auxiliary checks of the initial product
 coefficients below. [`Solution.lean`](Solution.lean) proves the main identities
 and the auxiliary checks using definitions and proof bridges in `Comparator/`.
-The challenge definitions are independent of the production proof. Only
+The challenge imports only Mathlib; Rogers–Ramanujan is used by the production
+proof. The challenge definitions are independent of that proof. Only
 `propext`, `Classical.choice`, and `Quot.sound` are permitted axioms.
 
 [`Product/InitialCoefficients.lean`](KanadeRussell/Product/InitialCoefficients.lean)

@@ -28,13 +28,13 @@ hypotheses. `HasSum` includes convergence. The three coefficient targets fix
 the product constant coefficients to 1; the `HasSum` equalities then give
 constant coefficient 1 on the source sides as well.
 
-`Challenge.lean` imports only Mathlib and RogersRamanujan and contains exactly
-six intentional proof placeholders. The root [`Solution.lean`](../Solution.lean)
-proves the same six names without importing the challenge. Its independent
-formula definitions are in `Problem.lean`; `Submission.lean` proves exact
-bridges from the explicit finite/infinite products to the completed library
-theorems. The checker requires the formula definitions to match the trusted
-challenge, ignoring comments and whitespace.
+`Challenge.lean` imports only Mathlib and contains six intentional proof
+placeholders. The root [`Solution.lean`](../Solution.lean) proves the same six
+statements, using `RogersRamanujan` as a pinned proof dependency. Its independent
+formula definitions are in [`Problem.lean`](Problem.lean);
+[`Submission.lean`](Submission.lean) identifies them with the library definitions.
+The checker requires these definitions to match the challenge, ignoring
+comments and whitespace.
 
 ## Local checks
 
