@@ -52,22 +52,35 @@ The first build also compiles the RogersRamanujan dependency from source.
 
 ```sh
 python scripts/check-comparator.py
-lake env lean Comparator/Solution.lean
+python scripts/test_check_comparator.py
 python scripts/audit-axioms.py
 python Comparator/check_statements.py
 ```
 
-The independent specification has 16 targets, all matched by the production
-proof. The axiom audit allows only Lean's standard `propext`,
-`Classical.choice`, and `Quot.sound`. The numerical comparator checks finite
-truncations as an additional check of the statements; it is not a proof.
-See [Comparator/README.md](Comparator/README.md) for the specification protocol.
+The independent challenge in [Challenge.lean](Challenge.lean) has four closed
+targets: the three original identities as convergent `HasSum` statements and
+nonzero constant coefficients for all six sides. [Solution.lean](Solution.lean)
+proves these targets without importing the challenge's proof placeholders.
+The checker builds the proof, checks the exact closed types, and audits their
+transitive axioms. Only `propext`, `Classical.choice`, and `Quot.sound` are allowed.
+The negative tests check that invalid statements, hidden assumptions, and
+incomplete axiom output are rejected.
+
+[GitHub Actions](.github/workflows/ci.yml) also runs the independent
+`leanprover/comparator` export comparison using [comparator.json](comparator.json).
+The earlier sixteen-statement checkpoint is retained under `Comparator/`.
+The numerical comparator checks finite truncations as an additional check of
+the statements; it is not a proof. See [Comparator/README.md](Comparator/README.md)
+for the verification protocol.
 
 ## Layout
 
 - `KanadeRussell/`: proof library and axiom audit.
-- `Comparator/`: independent specification, exact-type submission, and
-  numerical statement checks.
+- `Challenge.lean`, `Solution.lean`, `comparator.json`: independent four-target
+  challenge, solution, and verifier configuration.
+- `Comparator/`: independent formula definitions, proof bridges, historical
+  specification checks, and numerical statement checks.
+- `.github/workflows/ci.yml`: build and independent verification on GitHub Actions.
 - `scripts/`: reproducible verification tools.
 
 The `KanadeRussell/Pending/` modules define propositions used by conditional

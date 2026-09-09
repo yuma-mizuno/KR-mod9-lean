@@ -1,0 +1,143 @@
+name: KR CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    paths-ignore: [README.md]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.repository }}-kr-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Build and verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      LANDRUN_REF: 5ed4a3db3a4ad930d577215c6b9abaa19df7f99f
+      # Official v4.31.0 tags; Comparator's manifest pins this same exporter.
+      LEAN4EXPORT_REF: 8554815c2dc6b7abe99ec1f08849c9759ba77947
+      COMPARATOR_REF: fd2e25de155523dbce1f35d410511f9f63998461
+    steps:
+      - name: Check out project
+        uses: actions/checkout@v6
+
+      - name: Restore Lake build cache
+        id: lake-cache
+        uses: actions/cache/restore@v6
+        with:
+          path: .lake/build
+          key: ${{ runner.os }}-${{ runner.arch }}-lake-v2-${{ hashFiles('lean-toolchain', 'lake-manifest.json', 'lakefile.toml') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-lake-v2-${{ hashFiles('lean-toolchain', 'lake-manifest.json', 'lakefile.toml') }}-
+
+      - name: Set up Lean
+        uses: leanprover/lean-action@v1
+        with:
+          auto-config: false
+          build: false
+          test: false
+          use-github-cache: false
+          use-mathlib-cache: true
+
+      - name: Build production library
+        run: lake build KanadeRussell
+
+      # Save before the long verifier steps; dependency packages are not cached here.
+      - name: Save Lake build cache
+        if: steps.lake-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: .lake/build
+          key: ${{ steps.lake-cache.outputs.cache-primary-key }}
+
+      - name: Check the four challenge endpoints
+        run: python scripts/check-comparator.py --no-build
+
+      - name: Test the local Comparator checker
+        run: python scripts/test_check_comparator.py
+
+      - name: Restore verifier binaries
+        id: verifier-cache
+        uses: actions/cache/restore@v6
+        with:
+          path: ~/verifier-bin
+          key: verifier-bin-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('lean-toolchain') }}-${{ env.LANDRUN_REF }}-${{ env.LEAN4EXPORT_REF }}-${{ env.COMPARATOR_REF }}-v1
+
+      - name: Set up Go
+        if: steps.verifier-cache.outputs.cache-hit != 'true'
+        uses: actions/setup-go@v6
+        with:
+          go-version: stable
+          cache: false
+
+      - name: Install pinned landrun
+        if: steps.verifier-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p "$HOME/verifier-bin"
+          GOBIN="$HOME/verifier-bin" \
+            go install github.com/zouuup/landrun/cmd/landrun@"$LANDRUN_REF"
+
+      - name: Check out lean4export
+        if: steps.verifier-cache.outputs.cache-hit != 'true'
+        uses: actions/checkout@v6
+        with:
+          repository: leanprover/lean4export
+          ref: ${{ env.LEAN4EXPORT_REF }}
+          path: .ci/lean4export
+
+      - name: Build lean4export
+        if: steps.verifier-cache.outputs.cache-hit != 'true'
+        working-directory: .ci/lean4export
+        run: |
+          test "$(tr -d '\r\n' < lean-toolchain)" = "$(tr -d '\r\n' < "$GITHUB_WORKSPACE/lean-toolchain")"
+          lake build lean4export
+          cp .lake/build/bin/lean4export "$HOME/verifier-bin/"
+
+      - name: Check out Comparator
+        if: steps.verifier-cache.outputs.cache-hit != 'true'
+        uses: actions/checkout@v6
+        with:
+          repository: leanprover/comparator
+          ref: ${{ env.COMPARATOR_REF }}
+          path: .ci/comparator
+
+      - name: Build Comparator verifier
+        if: steps.verifier-cache.outputs.cache-hit != 'true'
+        working-directory: .ci/comparator
+        run: |
+          test "$(tr -d '\r\n' < lean-toolchain)" = "$(tr -d '\r\n' < "$GITHUB_WORKSPACE/lean-toolchain")"
+          lake build comparator
+          cp .lake/build/bin/comparator "$HOME/verifier-bin/"
+
+      - name: Save verifier binaries
+        if: steps.verifier-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: ~/verifier-bin
+          key: ${{ steps.verifier-cache.outputs.cache-primary-key }}
+
+      - name: Add verifier binaries to PATH
+        run: echo "$HOME/verifier-bin" >> "$GITHUB_PATH"
+
+      - name: Check runner disk
+        run: |
+          df -h "$GITHUB_WORKSPACE"
+          du -sh .lake/packages .lake/build 2>/dev/null || true
+
+      - name: Compare the KR statements and constant coefficient
+        run: |
+          systemd-run \
+            --property=RestrictAddressFamilies=~AF_UNIX \
+            --user --pty --pipe \
+            -E PATH="$PATH" \
+            -E COMPARATOR_LANDRUN="$HOME/verifier-bin/landrun" \
+            -E COMPARATOR_LEAN4EXPORT="$HOME/verifier-bin/lean4export" \
+            --working-directory "$GITHUB_WORKSPACE" \
+            -- bash -c 'lake env comparator comparator.json'

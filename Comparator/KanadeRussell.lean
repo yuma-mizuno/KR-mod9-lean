@@ -3,7 +3,10 @@ import RogersRamanujan
 set_option backward.isDefEq.respectTransparency false
 
 /-!
-# Comparator: trusted specification of the three Kanade–Russell identities modulo 9
+# Historical sixteen-target comparator
+
+The active four-target challenge is now the root Challenge.lean, selected by
+comparator.json. This file preserves the earlier development checkpoint.
 
 This file is the *trusted specification* (the "problem" side of the comparator).
 It contains only definitions written directly from the paper

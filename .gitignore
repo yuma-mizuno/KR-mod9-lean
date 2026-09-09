@@ -15,3 +15,5 @@ AGENTS.md
 .codex/
 .env
 .env.*
+
+/.ci/
