@@ -1,0 +1,17 @@
+.lake/
+build/
+__pycache__/
+*.py[cod]
+*.olean
+*.ilean
+*.log
+
+# Local development material
+research/
+*PLAN*.md
+*plan*.md
+AGENTS.md
+.agents/
+.codex/
+.env
+.env.*

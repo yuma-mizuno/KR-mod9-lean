@@ -1,0 +1,205 @@
+import KanadeRussell.Representation.PrincipalHighestWeight
+import KanadeRussell.Representation.PrincipalGrading
+import KanadeRussell.Representation.PrincipalDerivation
+import KanadeRussell.Representation.ConcretePrincipalDerivation
+import KanadeRussell.Representation.ConcreteHighestWeight
+import KanadeRussell.Representation.ChevalleyAction
+import KanadeRussell.Sectors.LowerTensorGrades
+import KanadeRussell.Representation.WeightSpanning
+import KanadeRussell.Representation.WeightIndependence
+import KanadeRussell.Representation.HeisenbergEulerTruncation
+import KanadeRussell.Representation.HeisenbergCharacter
+import KanadeRussell.Representation.ConcreteHeisenbergCharacter
+import KanadeRussell.Representation.ConcreteCharacters
+import KanadeRussell.Heisenberg.ShiftedPolynomialGrading
+import KanadeRussell.Heisenberg.GradeRecurrence
+import KanadeRussell.Heisenberg.FiniteVacuumGrading
+import KanadeRussell.Heisenberg.FiniteVacuumCharacter
+import KanadeRussell.Tsuchioka.TensorThirdCoefficient
+import KanadeRussell.Tsuchioka.AlternatingSmallGrades
+import KanadeRussell.Tsuchioka.AffineVacuumIntegrability
+import KanadeRussell.Tsuchioka.AffineSkewLowering
+import KanadeRussell.Tsuchioka.AffineSkewIntegrability
+import KanadeRussell.Tsuchioka.AffineAlternatingLowering
+import KanadeRussell.Tsuchioka.AffineAlternatingIntegrability
+import KanadeRussell.Representation.VacuumIntegrability
+import KanadeRussell.Representation.ThreeSectorIntegrability
+import KanadeRussell.Representation.LocalNilpotence
+import KanadeRussell.Representation.CyclicIntegrability
+import KanadeRussell.Tsuchioka.AffineVacuumLowering
+import KanadeRussell.Tsuchioka.ComplexPhase
+import KanadeRussell.Representation.FullCharacter
+import KanadeRussell.Tsuchioka.Words
+import KanadeRussell.Tsuchioka.Straightening
+import KanadeRussell.Tsuchioka.Coefficients
+import KanadeRussell.Tsuchioka.Phases
+import KanadeRussell.Tsuchioka.ExceptionalReduction
+import KanadeRussell.Tsuchioka.OrderingReduction
+import KanadeRussell.Tsuchioka.PairReductions
+import KanadeRussell.Tsuchioka.LocalReduction
+import KanadeRussell.Tsuchioka.Contractions
+import KanadeRussell.Tsuchioka.FockGrading
+import KanadeRussell.Tsuchioka.NormalOrdering
+import KanadeRussell.Tsuchioka.BinomialFactors
+import KanadeRussell.Tsuchioka.ScalarFactors
+import KanadeRussell.Tsuchioka.RationalFactors
+import KanadeRussell.Tsuchioka.PrimitivePhases
+import KanadeRussell.Tsuchioka.SourceSeries
+import KanadeRussell.Tsuchioka.SourceEmbedding
+import KanadeRussell.Tsuchioka.FormalFourier
+import KanadeRussell.Tsuchioka.SourceCoefficients
+import KanadeRussell.Tsuchioka.SourceReductions
+import KanadeRussell.Tsuchioka.PartialFractionCertificates
+import KanadeRussell.Tsuchioka.ScalarPhases
+import KanadeRussell.Tsuchioka.PartialFractions
+import KanadeRussell.Tsuchioka.FourierSymmetry
+import KanadeRussell.Tsuchioka.FourierAssembly
+import KanadeRussell.Tsuchioka.SourceFourier
+import KanadeRussell.Tsuchioka.CombinedFourier
+import KanadeRussell.Tsuchioka.CommutatorScalar
+
+import KanadeRussell.Tsuchioka.RootFunctional
+import KanadeRussell.Tsuchioka.RootFock
+import KanadeRussell.Tsuchioka.RootCovariance
+
+import KanadeRussell.Tsuchioka.LaurentRescaling
+import KanadeRussell.Tsuchioka.AnnihilationCovariance
+import KanadeRussell.Tsuchioka.PoleFusion
+import KanadeRussell.Tsuchioka.JointAnnihilation
+import KanadeRussell.Tsuchioka.TwoFields
+
+import KanadeRussell.Tsuchioka.TwoVariableSupport
+import KanadeRussell.Tsuchioka.DeltaContraction
+import KanadeRussell.Tsuchioka.DiagonalEvaluation
+import KanadeRussell.Tsuchioka.NormalProductEvaluation
+import KanadeRussell.Tsuchioka.ModeResidues
+import KanadeRussell.Tsuchioka.NormalProductSymmetry
+import KanadeRussell.Tsuchioka.RatioContraction
+import KanadeRussell.Tsuchioka.WeightedFields
+
+import KanadeRussell.Tsuchioka.ScalarContraction
+import KanadeRussell.Tsuchioka.MixedPole
+import KanadeRussell.Tsuchioka.CentralDelta
+import KanadeRussell.Tsuchioka.ResidueMaps
+import KanadeRussell.Tsuchioka.OperatorKernels
+import KanadeRussell.Tsuchioka.G2Anticommutator
+import KanadeRussell.Tsuchioka.FiniteModeRelations
+
+import KanadeRussell.Tsuchioka.EulerDiagonal
+import KanadeRussell.Tsuchioka.EulerPolynomial
+import KanadeRussell.Tsuchioka.CentralCreationEuler
+import KanadeRussell.Tsuchioka.CentralAnnihilationEuler
+import KanadeRussell.Tsuchioka.CentralEuler
+import KanadeRussell.Tsuchioka.G1Commutator
+import KanadeRussell.Tsuchioka.ConcreteOrdering
+
+import KanadeRussell.Tsuchioka.MixedPhase
+import KanadeRussell.Tsuchioka.MixedCreationCycle
+import KanadeRussell.Tsuchioka.MixedPoleCycle
+import KanadeRussell.Tsuchioka.MixedPoleSupport
+import KanadeRussell.Tsuchioka.MixedResidueVanishing
+import KanadeRussell.Tsuchioka.PartialModeRelations
+import KanadeRussell.Tsuchioka.ConcretePairs
+
+import KanadeRussell.Tsuchioka.SecondRootCoefficient
+import KanadeRussell.Tsuchioka.SecondRootElimination
+import KanadeRussell.Tsuchioka.RootGeneration
+import KanadeRussell.Tsuchioka.RootCyclicSpanning
+
+import KanadeRussell.Tsuchioka.RootOrbits
+import KanadeRussell.Tsuchioka.AllRootGeneration
+import KanadeRussell.Tsuchioka.DegreeOperator
+import KanadeRussell.Tsuchioka.ZCyclicGeneration
+import KanadeRussell.Tsuchioka.ZCyclicGrading
+
+import KanadeRussell.Tsuchioka.CoefficientDerivations
+import KanadeRussell.Tsuchioka.DiagonalDerivations
+import KanadeRussell.Tsuchioka.DegreeDerivation
+import KanadeRussell.Tsuchioka.DiagonalHeisenberg
+import KanadeRussell.Tsuchioka.HeisenbergCyclicSpace
+import KanadeRussell.Tsuchioka.PolynomialDerivativeKernel
+import KanadeRussell.Tsuchioka.VacuumCoordinates
+import KanadeRussell.Tsuchioka.VacuumPolynomialModel
+
+import KanadeRussell.Tsuchioka.VacuumProjection
+import KanadeRussell.Tsuchioka.HeisenbergSpanning
+import KanadeRussell.Tsuchioka.OscillatorCyclicity
+import KanadeRussell.Tsuchioka.TensorRootFields
+import KanadeRussell.Tsuchioka.TensorHeisenberg
+import KanadeRussell.Tsuchioka.DressingCoefficients
+import KanadeRussell.Tsuchioka.ModeDressing
+import KanadeRussell.Tsuchioka.TensorCyclicity
+import KanadeRussell.Tsuchioka.ExponentialDerivation
+import KanadeRussell.Tsuchioka.PositiveTensorHeisenberg
+import KanadeRussell.Tsuchioka.TensorGrading
+import KanadeRussell.Tsuchioka.ProjectedRootPairing
+import KanadeRussell.Tsuchioka.TensorNormalOrdering
+import KanadeRussell.Tsuchioka.TensorJointAnnihilation
+import KanadeRussell.Tsuchioka.TensorCommutatorKernel
+import KanadeRussell.Tsuchioka.TensorCovariance
+import KanadeRussell.Tsuchioka.TensorPoleFusion
+import KanadeRussell.Tsuchioka.TensorModeResidues
+import KanadeRussell.Tsuchioka.TensorCentralAnnihilationEuler
+import KanadeRussell.Tsuchioka.TensorCentralCreationEuler
+import KanadeRussell.Tsuchioka.TensorCentralEuler
+import KanadeRussell.Tsuchioka.TensorResidueMaps
+import KanadeRussell.Tsuchioka.TensorFirstRootCommutator
+import KanadeRussell.Tsuchioka.OrbitPairingFactorization
+import KanadeRussell.Tsuchioka.TensorScalarFactors
+import KanadeRussell.Tsuchioka.TensorRootScalars
+import KanadeRussell.Tsuchioka.TensorAllRootKernel
+import KanadeRussell.Tsuchioka.MixedRootScalarCertificates
+import KanadeRussell.Tsuchioka.MixedRootScalarExpansion
+import KanadeRussell.Tsuchioka.TensorPairResidues
+import KanadeRussell.Tsuchioka.TensorMixedRootCommutator
+import KanadeRussell.Tsuchioka.TensorRootCentralAnnihilation
+import KanadeRussell.Tsuchioka.TensorRootCentralEuler
+import KanadeRussell.Tsuchioka.TensorRootCentralResidues
+import KanadeRussell.Tsuchioka.SecondRootScalarExpansion
+import KanadeRussell.Tsuchioka.TensorSecondRootCommutator
+
+import KanadeRussell.Tsuchioka.TensorModeBrackets
+import KanadeRussell.Tsuchioka.TensorLieCoordinates
+import KanadeRussell.Tsuchioka.SerreUniversal
+import KanadeRussell.Tsuchioka.TensorCoordinateIteration
+import KanadeRussell.Tsuchioka.TensorVacuumWeights
+import KanadeRussell.Tsuchioka.TensorLieDerivation
+import KanadeRussell.Tsuchioka.CyclotomicPhaseReduction
+import KanadeRussell.Tsuchioka.ChevalleyCoefficients
+import KanadeRussell.Tsuchioka.ChevalleySerreCoefficients
+import KanadeRussell.Tsuchioka.AffineChevalley
+import KanadeRussell.Tsuchioka.AffineHighestWeight
+import KanadeRussell.Tsuchioka.AffinePrincipalDegree
+
+import KanadeRussell.Tsuchioka.TensorDegreeOne
+import KanadeRussell.Tsuchioka.AffineSkewHighestWeight
+import KanadeRussell.Tsuchioka.AlternatingSeed
+import KanadeRussell.Tsuchioka.TensorAlternatingCoefficients
+import KanadeRussell.Tsuchioka.TensorAlternatingWeights
+import KanadeRussell.Tsuchioka.AffineAlternatingHighestWeight
+import KanadeRussell.Tsuchioka.AlternatingVacuumModes
+
+import KanadeRussell.Tsuchioka.LowCreationCoefficients
+import KanadeRussell.Tsuchioka.AlternatingInitialPolynomials
+import KanadeRussell.Tsuchioka.AlternatingInitialModes
+import KanadeRussell.Tsuchioka.AlternatingGrading
+import KanadeRussell.Tsuchioka.AlternatingInitialReduction
+
+/-! Checked components of Tsuchioka's proof. All four source Z relations,
+all three concrete cyclic spanning bounds, every D4 root, both tensor dressing identities,
+and all three complete tensor root-family brackets are proved.
+
+Explicit Chevalley generators now give a Lie algebra homomorphism from the
+Serre quotient of the source D4^(3) Cartan matrix to the concrete tensor
+endomorphisms. All six defining relation families are proved. The dual marks
+give level three, and the principal derivation has the prescribed brackets
+with the generators. The polynomial vacuum, the degree-one difference, and
+the degree-three alternating polynomial are proved nonzero highest-weight
+vectors of weights (3,0,0), (1,1,0), and (0,0,1), respectively.
+
+The alternating action also has a proved shifted nonnegative grading and the
+minimum-three initial relations. All three concrete spanning instantiations and their quotient-vacuum dimension
+bounds are now proved. The separate Theorems entry point proves the actual
+character applications and LowerBounds using the root-multiplicity and G2
+denominator arguments. This entry point retains the independent scope of the
+vertex-operator construction; see Tsuchioka/README.md. -/

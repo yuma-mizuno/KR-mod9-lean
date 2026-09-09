@@ -1,0 +1,35 @@
+# KR-mod9-lean — Lean 4 formalization of the three Kanade–Russell identities modulo 9.
+#
+# Version policy: follow the AxiomMath `RogersRamanujan`
+# library's adopted commit and use exactly the mathlib rev / lean-toolchain it pins.
+# Adopted commit (2026-09-08): RogersRamanujan main f391e276 / mathlib v4.31.0 /
+# lean v4.31.0.  Updates are made by moving the adopted commit forward as a unit.
+
+name = "KRLean"
+defaultTargets = ["KanadeRussell"]
+
+[leanOptions]
+pp.unicode.fun = true
+autoImplicit = false
+relaxedAutoImplicit = false
+
+[[require]]
+name = "RogersRamanujan"
+git = "https://github.com/AxiomMath/RogersRamanujan"
+rev = "f391e2763f47243d4c252604aad65bbb2a22751a"
+
+# mathlib is pinned to the same rev the RogersRamanujan lakefile requests, so the two
+# requirements never disagree (the root package's pin wins in lake).
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.31.0"
+
+# Production library (proof).
+[[lean_lib]]
+name = "KanadeRussell"
+
+# Trusted specification (statements only; one intentional `sorry` per target).
+[[lean_lib]]
+name = "Comparator"
+roots = ["Comparator.KanadeRussell"]
