@@ -1,25 +1,36 @@
-# KR statement and constant-coefficient challenge
+# Kanade–Russell identity challenge
 
-The active independent challenge is the root [`Challenge.lean`](../Challenge.lean).
-Its complete target set is:
+The main challenge in [`Challenge.lean`](../Challenge.lean) is to prove the
+three original Kanade–Russell identities modulo nine:
 
-1. The first original modulo-nine KR identity, as a convergent `HasSum`.
-2. The second original modulo-nine KR identity, as a convergent `HasSum`.
-3. The third original modulo-nine KR identity, as a convergent `HasSum`.
-4. Nonzero constant coefficients for all three source sums and all three
-   reciprocal products.
+1. `Challenge.kr₁`: the first full double-sum/product identity.
+2. `Challenge.kr₂`: the second full double-sum/product identity.
+3. `Challenge.kr₃`: the third full double-sum/product identity.
+
+Each is stated as `HasSum`, so it includes convergence and equality of the
+entire formal power series. These are the main mathematical results checked
+by the Comparator.
+
+Three auxiliary targets, `Challenge.product₁_initial_coefficients`,
+`Challenge.product₂_initial_coefficients`, and
+`Challenge.product₃_initial_coefficients`, check the product definitions in
+degrees 0, 1, 2. Their values are listed below: the constant coefficient is 1
+for every product, and the coefficients in degrees 1 and 2 are checked
+explicitly. Proving the main identities still requires the three separate
+`HasSum` proofs.
 
 The formulas use integer formal power series with `q = PowerSeries.X`,
 explicit finite products in the summand denominators, and one infinite
 product for each of the residue sets `(1,3,6,8)`, `(2,3,6,7)`, `(3,4,5,6)`
 modulo nine. The source linear terms are respectively `0`, `m+3n`, `2m+3n`.
 There are no character, lower-bound, norm, or other auxiliary challenge
-hypotheses. `HasSum` includes convergence; the fourth target rules out zero
-constant terms on either side.
+hypotheses. `HasSum` includes convergence. The three coefficient targets fix
+the product constant coefficients to 1; the `HasSum` equalities then give
+constant coefficient 1 on the source sides as well.
 
 `Challenge.lean` imports only Mathlib and RogersRamanujan and contains exactly
-four intentional proof placeholders. The root [`Solution.lean`](../Solution.lean)
-proves the same four names without importing the challenge. Its independent
+six intentional proof placeholders. The root [`Solution.lean`](../Solution.lean)
+proves the same six names without importing the challenge. Its independent
 formula definitions are in `Problem.lean`; `Submission.lean` proves exact
 bridges from the explicit finite/infinite products to the completed library
 theorems. The checker requires the formula definitions to match the trusted
@@ -32,8 +43,9 @@ python scripts/check-comparator.py
 python scripts/test_check_comparator.py
 ```
 
-The first command builds the library and both Comparator entry points,
-recompiles the solution source, checks that all four constants inhabit their
+The first command builds the production library and all four Comparator
+modules (`Challenge`, `Solution`, `Comparator.Problem`, `Comparator.Submission`),
+recompiles the solution source, checks that all six constants inhabit their
 closed challenge types, and audits their transitive axioms. Only `propext`,
 `Classical.choice`, and `Quot.sound` are allowed. It fails on missing targets,
 definition mismatch, compilation failure, hidden theorem parameters, or
@@ -45,12 +57,36 @@ CI build. It still runs `lake build Comparator`, refreshing every transitive
 dependency before checking the solution. The negative tests use temporary
 files and exercise wrong KR statements, zero constant terms, hidden section
 assumptions, proof placeholders, custom axioms, and incomplete audit output.
+A separate isolated Lake project checks that edits to both imported bridge
+modules are rebuilt even when the top-level solution is unchanged. The
+Comparator library explicitly owns `Problem` and `Submission` for this reason.
+
+## Auxiliary checks: coefficients through degree two
+
+The product-side theorems in
+[`KanadeRussell/Product/InitialCoefficients.lean`](../KanadeRussell/Product/InitialCoefficients.lean)
+give the coefficients directly, without using the KR identities:
+
+| Product | Degree 0 | Degree 1 | Degree 2 |
+| --- | --- | --- | --- |
+| `K₁` | 1 | 1 | 1 |
+| `K₂` | 1 | 0 | 1 |
+| `K₃` | 1 | 0 | 0 |
+
+`Challenge.product₁_initial_coefficients`,
+`Challenge.product₂_initial_coefficients`, and
+`Challenge.product₃_initial_coefficients` are the three auxiliary coefficient
+targets. Their propositions are stated independently in `Challenge.lean` and
+`Problem.lean`; `Solution.lean` proves them through the product bridges in
+`Submission.lean`. Both the local checker and the independent export
+comparison include these targets.
 
 ## Independent GitHub Actions verifier
 
-[`comparator.json`](../comparator.json) selects exactly these four targets.
-The workflow compiles the proof, caches the project artifacts and pinned
-verifier binaries separately, then runs the isolated
+[`comparator.json`](../comparator.json) selects the three main identity targets
+and the three auxiliary coefficient targets.
+The [Linux workflow](../.github/workflows/ci.yml) builds the library, runs the
+local checker and its tests, and is configured to run the isolated
 `leanprover/comparator` export comparison:
 
 ```sh
@@ -58,14 +94,19 @@ lake env comparator comparator.json
 ```
 
 The pinned Comparator and lean4export revisions match Lean 4.31.0. The
-workflow includes a `systemd-run` wrapper and address-family
-restriction for landrun. The local Python gate and its tests supplement this
-independent comparison; they do not replace it.
+workflow caches library artifacts and verifier binaries separately and runs
+the verifier through `systemd-run` with an address-family restriction for
+landrun. The local checker and the export comparison are separate checks;
+the workflow run records the result of the export comparison.
 
-## Historical checks
+## Historical and numerical checks
 
-`Comparator/KanadeRussell.lean` and `Comparator/Solution.lean` retain the old
-sixteen-statement checkpoint, including conditional reductions and auxiliary
-lemmas. They are not the active challenge or the CI acceptance target.
+The superseded sixteen-statement specification and solution were removed
+from the working tree. Their last versions are available in Git at
+`4acc752:Comparator/KanadeRussell.lean` and
+`4acc752:Comparator/Solution.lean`. The current Comparator directory contains
+only the independent definitions, proof bridges, this guide, and the numerical
+consistency checker.
+
 `check_statements.py` remains a separate truncated-coefficient consistency
 check. A finite numerical match is not an infinite-series proof.

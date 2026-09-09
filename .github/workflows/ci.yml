@@ -66,7 +66,7 @@ jobs:
           path: .lake/build
           key: ${{ steps.lake-cache.outputs.cache-primary-key }}
 
-      - name: Check the four challenge endpoints
+      - name: Check KR identities and auxiliary coefficients
         run: python scripts/check-comparator.py --no-build
 
       - name: Test the local Comparator checker
@@ -145,7 +145,7 @@ jobs:
           df -h "$GITHUB_WORKSPACE"
           du -sh .lake/packages .lake/build 2>/dev/null || true
 
-      - name: Compare the KR statements and constant coefficient
+      - name: Compare KR identities and auxiliary coefficients
         run: |
           systemd-run \
             --property=RestrictAddressFamilies=~AF_UNIX \

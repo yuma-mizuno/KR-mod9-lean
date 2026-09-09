@@ -1,3 +1,4 @@
 import KanadeRussell.Theorems
+import KanadeRussell.Product.InitialCoefficients
 import KanadeRussell.Tsuchioka
 import KanadeRussell.FromPrincipalCharacterTheorem

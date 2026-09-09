@@ -1,89 +1,95 @@
 # KR-mod9-lean
 
-Lean 4 formalization of the three Kanade–Russell identities modulo nine,
-following Y. Mizuno, *The three Kanade–Russell identities modulo nine* (2026).
+Lean 4 formalization of the three original Kanade–Russell identities modulo
+nine over integer formal power series, including convergence of the double
+sums.
 
-## Main results
+The mathematical reference is Y. Mizuno, *The three Kanade–Russell identities
+modulo nine* (2026), Theorem `thm:KR-evaluations`.
 
-The final entry point is [KanadeRussell/Theorems.lean](KanadeRussell/Theorems.lean).
-It proves the three formal power series identities over the integers:
+## Proved statements
 
-- `KanadeRussell.kanade_russell₁`: `A = K₁`.
-- `KanadeRussell.kanade_russell₂`: `B = K₂`.
-- `KanadeRussell.kanade_russell₃`: `C = K₃`.
+[`KanadeRussell/Theorems.lean`](KanadeRussell/Theorems.lean) proves:
 
-The declarations `kanade_russell_hasSum₁`, `kanade_russell_hasSum₂`, and
-`kanade_russell_hasSum₃` prove convergence of the original double sums to
-the corresponding products in the coefficientwise topology on formal power
-series. The conjunction of the three identities is `KanadeRussell.kanade_russell`.
-The source sums and products are defined in
-[KanadeRussell/Source/Defs.lean](KanadeRussell/Source/Defs.lean).
+| Declaration in `KanadeRussell` | Statement |
+| --- | --- |
+| `kanade_russell₁`, `kanade_russell₂`, `kanade_russell₃` | `A = K₁`, `B = K₂`, `C = K₃` |
+| `kanade_russell_hasSum₁`, `kanade_russell_hasSum₂`, `kanade_russell_hasSum₃` | The three double sums converge to their respective products |
+| `kanade_russell` | The conjunction of the three equalities |
 
-The proof combines concrete three-sector vertex-operator spanning bounds,
-Heisenberg character factorizations, character evaluation through a proved
-G2 denominator identity, independent source and product cubic norms, and
-positive-coefficient rigidity. The three character formulas and coefficient
-lower bounds are proved in the library; they are not additional assumptions
-of the final identities.
+The proof combines Tsuchioka's concrete spanning bounds with proved character
+formulas for the three constructed modules. These give coefficient lower
+bounds; the independently proved source and product norms, together with
+positive-coefficient rigidity, yield the identities. The character formulas
+are evaluated using the proved G2 denominator identity.
 
-## Build
+The final KR theorems have no character-formula or lower-bound hypothesis.
+The broader universal character theorem for arbitrary highest-weight modules
+is retained as an explicit hypothesis in
+[`FromPrincipalCharacterTheorem.lean`](KanadeRussell/FromPrincipalCharacterTheorem.lean);
+the completed proof does not depend on that conditional entry point.
 
-Install [Lean via elan](https://github.com/leanprover/elan), Git, and Python 3,
-then run:
+## Main KR challenge and auxiliary checks
+
+[`Challenge.lean`](Challenge.lean) states the main challenge as the three full
+KR identities: `Challenge.kr₁`, `Challenge.kr₂`, and `Challenge.kr₃`, each in
+`HasSum` form. It also includes three auxiliary checks of the initial product
+coefficients below. [`Solution.lean`](Solution.lean) proves the main identities
+and the auxiliary checks using definitions and proof bridges in `Comparator/`.
+The challenge definitions are independent of the production proof. Only
+`propext`, `Classical.choice`, and `Quot.sound` are permitted axioms.
+
+[`Product/InitialCoefficients.lean`](KanadeRussell/Product/InitialCoefficients.lean)
+also proves the following coefficients directly from the products:
+
+| Product | Degree 0 | Degree 1 | Degree 2 |
+| --- | --- | --- | --- |
+| `K₁` | 1 | 1 | 1 |
+| `K₂` | 1 | 0 | 1 |
+| `K₃` | 1 | 0 | 0 |
+
+These are named Lean theorems and auxiliary Comparator targets verifying
+the product definitions in low degrees. See the [Comparator guide](Comparator/README.md) for
+statements, checks, and the Linux export verifier.
+
+## Build and verify
+
+The versions are pinned in [`lakefile.toml`](lakefile.toml) and
+[`lean-toolchain`](lean-toolchain): Lean and mathlib `v4.31.0`, and AxiomMath's
+`RogersRamanujan` at `f391e2763f47243d4c252604aad65bbb2a22751a`.
+With Lean's `lake` command and Python available:
 
 ```sh
 git clone https://github.com/yuma-mizuno/KR-mod9-lean.git
 cd KR-mod9-lean
 lake exe cache get
-lake build KanadeRussell
-```
-
-The toolchain and dependency revisions are pinned in `lean-toolchain`,
-`lakefile.toml`, and `lake-manifest.json`:
-
-- Lean `v4.31.0`.
-- mathlib `v4.31.0`.
-- [AxiomMath/RogersRamanujan](https://github.com/AxiomMath/RogersRamanujan),
-  revision `f391e2763f47243d4c252604aad65bbb2a22751a`.
-
-The first build also compiles the RogersRamanujan dependency from source.
-
-## Verification
-
-```sh
 python scripts/check-comparator.py
 python scripts/test_check_comparator.py
 python scripts/audit-axioms.py
-python Comparator/check_statements.py
 ```
 
-The independent challenge in [Challenge.lean](Challenge.lean) has four closed
-targets: the three original identities as convergent `HasSum` statements and
-nonzero constant coefficients for all six sides. [Solution.lean](Solution.lean)
-proves these targets without importing the challenge's proof placeholders.
-The checker builds the proof, checks the exact closed types, and audits their
-transitive axioms. Only `propext`, `Classical.choice`, and `Quot.sound` are allowed.
-The negative tests check that invalid statements, hidden assumptions, and
-incomplete axiom output are rejected.
+The comparator checker builds the production library, challenge, definitions,
+bridges, and solution, then checks the six closed types and their transitive
+axioms. The test suite includes isolated Lean failure cases and a regression
+for rebuilding imported bridge modules. The public theorem axiom audit also
+includes the three explicit coefficient theorems.
 
-[GitHub Actions](.github/workflows/ci.yml) also runs the independent
-`leanprover/comparator` export comparison using [comparator.json](comparator.json).
-The earlier sixteen-statement checkpoint is retained under `Comparator/`.
-The numerical comparator checks finite truncations as an additional check of
-the statements; it is not a proof. See [Comparator/README.md](Comparator/README.md)
-for the verification protocol.
+[GitHub Actions](.github/workflows/ci.yml) is configured to build the library,
+run the comparator checker and its tests, and run the independent
+`leanprover/comparator` export comparison with pinned verifier binaries.
 
-## Layout
+The optional command `python Comparator/check_statements.py` checks finite
+truncations numerically. Its output is a separate consistency check, not an
+infinite-series proof.
 
-- `KanadeRussell/`: proof library and axiom audit.
-- `Challenge.lean`, `Solution.lean`, `comparator.json`: independent four-target
-  challenge, solution, and verifier configuration.
-- `Comparator/`: independent formula definitions, proof bridges, historical
-  specification checks, and numerical statement checks.
-- `.github/workflows/ci.yml`: build and independent verification on GitHub Actions.
+## Code and documentation
+
+- [`KanadeRussell.lean`](KanadeRussell.lean): library entry point for the final
+  theorems, initial coefficients, Tsuchioka components, and conditional interface.
+- [`KanadeRussell/Theorems.lean`](KanadeRussell/Theorems.lean): the three full
+  identities and their convergence statements.
+- [`KanadeRussell/Product/InitialCoefficients.lean`](KanadeRussell/Product/InitialCoefficients.lean):
+  direct proofs of the initial product coefficients.
+- [`Comparator/README.md`](Comparator/README.md): independent specification,
+  verification commands, and the numerical consistency checker.
 - `scripts/`: reproducible verification tools.
-
-The `KanadeRussell/Pending/` modules define propositions used by conditional
-entry points. They contain no custom axioms. The final theorems discharge
-the required inputs; the broader universal character proposition is not
-assumed by them.

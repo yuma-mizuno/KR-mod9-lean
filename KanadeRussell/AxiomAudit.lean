@@ -7,6 +7,9 @@ import KanadeRussell
 #print axioms KanadeRussell.K₂_mul
 #print axioms KanadeRussell.K₃_mul
 #print axioms KanadeRussell.constantCoeff_eq_one
+#print axioms KanadeRussell.Product.K₁_initial_coefficients
+#print axioms KanadeRussell.Product.K₂_initial_coefficients
+#print axioms KanadeRussell.Product.K₃_initial_coefficients
 #print axioms KanadeRussell.Rigidity.rigidity
 #print axioms KanadeRussell.Infra.eulerAlt_eq_zero
 #print axioms KanadeRussell.Infra.eulerAlt_neg_factorial

@@ -1,7 +1,8 @@
 import Comparator.Problem
 import KanadeRussell.Theorems
+import KanadeRussell.Product.InitialCoefficients
 
-/-! A submission to the independent four-target challenge. The finite and
+/-! Proof bridges for the main KR identities and auxiliary coefficient checks. The finite and
 infinite products are matched explicitly to the production definitions. -/
 set_option autoImplicit false
 set_option backward.isDefEq.respectTransparency false
@@ -47,6 +48,8 @@ private theorem product₁_eq : product₁ = KanadeRussell.K₁ := reciprocalPro
 private theorem product₂_eq : product₂ = KanadeRussell.K₂ := reciprocalProduct_eq 2 3 6 7
 private theorem product₃_eq : product₃ = KanadeRussell.K₃ := reciprocalProduct_eq 3 4 5 6
 
+/-! ## Main challenge: full double-sum/product identities -/
+
 theorem kr₁ : KR₁ := by
   change HasSum (summand 0 0) product₁
   rw [summand_eq,product₁_eq]
@@ -62,14 +65,24 @@ theorem kr₃ : KR₃ := by
   rw [summand_eq,product₃_eq]
   exact KanadeRussell.kanade_russell_hasSum₃
 
-theorem constantCoefficientNontriviality : ConstantCoefficientNontriviality := by
-  unfold ConstantCoefficientNontriviality source
-  rw [summand_eq,summand_eq,summand_eq,product₁_eq,product₂_eq,product₃_eq]
-  simp only [coeff_zero_eq_constantCoeff]
-  obtain ⟨hA,hB,hC,h₁,h₂,h₃⟩ := KanadeRussell.constantCoeff_eq_one
-  change constantCoeff KanadeRussell.A ≠ 0 ∧ constantCoeff KanadeRussell.B ≠ 0 ∧
-    constantCoeff KanadeRussell.C ≠ 0 ∧ constantCoeff KanadeRussell.K₁ ≠ 0 ∧
-    constantCoeff KanadeRussell.K₂ ≠ 0 ∧ constantCoeff KanadeRussell.K₃ ≠ 0
-  rw [hA,hB,hC,h₁,h₂,h₃]
-  norm_num
+/-! ## Auxiliary checks: initial product coefficients -/
+
+/-- The first product is `1 + q + q²` through degree two. -/
+theorem product₁_initial_coefficients :
+    coeff 0 product₁ = 1 ∧ coeff 1 product₁ = 1 ∧ coeff 2 product₁ = 1 := by
+  rw [product₁_eq]
+  exact KanadeRussell.Product.K₁_initial_coefficients
+
+/-- The second product is `1 + q²` through degree two. -/
+theorem product₂_initial_coefficients :
+    coeff 0 product₂ = 1 ∧ coeff 1 product₂ = 0 ∧ coeff 2 product₂ = 1 := by
+  rw [product₂_eq]
+  exact KanadeRussell.Product.K₂_initial_coefficients
+
+/-- The third product is `1` through degree two. -/
+theorem product₃_initial_coefficients :
+    coeff 0 product₃ = 1 ∧ coeff 1 product₃ = 0 ∧ coeff 2 product₃ = 0 := by
+  rw [product₃_eq]
+  exact KanadeRussell.Product.K₃_initial_coefficients
+
 end KRChallenge.Submitted

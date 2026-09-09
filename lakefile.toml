@@ -29,7 +29,8 @@ rev = "v4.31.0"
 [[lean_lib]]
 name = "KanadeRussell"
 
-# Independent four-target KR challenge and its separately compiled solution.
+# Independent six-target KR challenge and its separately compiled solution.
+# Own both bridge modules explicitly so edits to imported formulas/proofs trigger rebuilds.
 [[lean_lib]]
 name = "Comparator"
 roots = ["Challenge", "Solution", "Comparator.Problem", "Comparator.Submission"]

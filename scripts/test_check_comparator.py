@@ -6,6 +6,7 @@ import contextlib
 import io
 import importlib.util
 import json
+import re
 import subprocess
 import tempfile
 import unittest
@@ -31,17 +32,37 @@ class ComparatorGateTests(unittest.TestCase):
             with self.subTest(output=output), self.assertRaises(ValueError):
                 checker.verify_axioms(output)
 
-    def test_cannot_remove_nontriviality_or_permit_an_axiom(self):
+    def test_cannot_remove_kr_target_or_permit_an_axiom(self):
         original = json.loads((ROOT/'comparator.json').read_text(encoding='utf-8-sig'))
         checker.validate_config(original)
         config = copy.deepcopy(original)
-        config['theorem_names'].pop()
+        config['theorem_names'].remove('Challenge.kr₁')
         with self.assertRaises(ValueError):
             checker.validate_config(config)
         config = copy.deepcopy(original)
         config['permitted_axioms'].append('sorryAx')
         with self.assertRaises(ValueError):
             checker.validate_config(config)
+
+    def test_cannot_remove_explicit_coefficient_targets(self):
+        original = json.loads((ROOT/'comparator.json').read_text(encoding='utf-8-sig'))
+        for digit in ('₁', '₂', '₃'):
+            with self.subTest(product=digit):
+                config = copy.deepcopy(original)
+                config['theorem_names'].remove(f'Challenge.product{digit}_initial_coefficients')
+                with self.assertRaises(ValueError):
+                    checker.validate_config(config)
+
+    def test_changed_explicit_coefficient_statement_is_rejected(self):
+        problem = (ROOT/'Comparator/Problem.lean').read_text(encoding='utf-8-sig')
+        challenge = (ROOT/'Challenge.lean').read_text(encoding='utf-8-sig')
+        for digit, value in (('₁', 1), ('₂', 1), ('₃', 0)):
+            with self.subTest(product=digit):
+                original = f'PowerSeries.coeff 2 product{digit} = {value}'
+                self.assertIn(original, problem)
+                changed = problem.replace(original, f'PowerSeries.coeff 2 product{digit} = {1-value}', 1)
+                with self.assertRaises(ValueError):
+                    checker.validate_problem_copy(challenge, changed)
 
     def test_definitions_in_comments_do_not_hide_changed_formula(self):
         problem = (ROOT/'Comparator/Problem.lean').read_text(encoding='utf-8-sig')
@@ -97,8 +118,10 @@ class LeanNegativeControls(unittest.TestCase):
 
     def test_zero_constant_coefficient_is_rejected(self):
         result = self.compile('example : PowerSeries.coeff 0 (0 : PowerSeries ℤ) ≠ 0 := by\n'
-                              '  have h := KRChallenge.Submitted.constantCoefficientNontriviality\n'
-                              '  exact h.1\n')
+                              '  have h := KRChallenge.Submitted.product₁_initial_coefficients\n'
+                              '  have hn : PowerSeries.coeff 0 KRChallenge.product₁ ≠ 0 := by\n'
+                              '    rw [h.1]; norm_num\n'
+                              '  exact hn\n')
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('Type mismatch', result.stdout)
 
@@ -123,6 +146,57 @@ class LeanNegativeControls(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         with self.assertRaisesRegex(ValueError, 'inventedCharacterFormula'):
             checker.verify_axioms(result.stdout, ('Challenge.kr₁',))
+
+
+class LakeModuleRebuildTests(unittest.TestCase):
+    """Imported comparator bridges must remain owned incremental-build inputs."""
+
+    def test_imported_bridges_rebuild_after_source_changes(self):
+        lakefile = (ROOT/'lakefile.toml').read_text(encoding='utf-8-sig')
+        stanzas = re.findall(r'^\[\[lean_lib\]\][^\n]*\n.*?(?=^\[|\Z)',
+                             lakefile, re.M | re.S)
+        comparator = [stanza for stanza in stanzas
+                      if re.search(r'^name\s*=\s*"Comparator"\s*$', stanza, re.M)]
+        self.assertEqual(len(comparator), 1, 'Expected one actual Comparator library stanza')
+        build = ROOT/'build'
+        build.mkdir(exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix='comparator-rebuild-', dir=build) as scratch:
+            project = Path(scratch).resolve()
+            self.assertEqual(project.parent, build.resolve())
+            (project/'lakefile.toml').write_text(
+                'name = "KRComparatorRebuildTest"\n\n' + comparator[0], encoding='utf-8')
+            (project/'lean-toolchain').write_text(
+                (ROOT/'lean-toolchain').read_text(encoding='utf-8-sig'), encoding='utf-8')
+            (project/'Comparator').mkdir()
+            problem = project/'Comparator/Problem.lean'
+            submission = project/'Comparator/Submission.lean'
+            problem.write_text('theorem KRRebuildProbe.problemBase : True := True.intro\n',
+                               encoding='utf-8')
+            submission.write_text('import Comparator.Problem\n'
+                                  'theorem KRRebuildProbe.submissionBase : True := True.intro\n',
+                                  encoding='utf-8')
+            (project/'Challenge.lean').write_text(
+                'theorem KRRebuildProbe.challengeBase : True := True.intro\n', encoding='utf-8')
+            (project/'Solution.lean').write_text('import Comparator.Submission\n', encoding='utf-8')
+
+            def run(*args):
+                result = subprocess.run(args, cwd=project, capture_output=True,
+                                        encoding='utf-8', errors='replace', timeout=120)
+                self.assertEqual(result.returncode, 0,
+                                 ' '.join(args) + '\n' + result.stdout + result.stderr)
+
+            run('lake', 'build', 'Comparator')
+            with problem.open('a', encoding='utf-8') as stream:
+                stream.write('theorem KRRebuildProbe.problemFresh : True := True.intro\n')
+            with submission.open('a', encoding='utf-8') as stream:
+                stream.write('theorem KRRebuildProbe.submissionFresh : True := True.intro\n')
+            # Neither endpoint changes: only dependency ownership can refresh these imports.
+            run('lake', 'build', 'Comparator')
+            (project/'Probe.lean').write_text(
+                'import Solution\n'
+                'example : True := KRRebuildProbe.problemFresh\n'
+                'example : True := KRRebuildProbe.submissionFresh\n', encoding='utf-8')
+            run('lake', 'env', 'lean', 'Probe.lean')
 
 
 if __name__ == '__main__':

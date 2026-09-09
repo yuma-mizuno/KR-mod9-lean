@@ -66,7 +66,7 @@ def main():
         if axioms - ALLOWED:
             raise SystemExit(f"Unapproved axioms in {name}: {sorted(axioms - ALLOWED)}")
     print(f"Tsuchioka component audit: {len(names)} public theorems; only standard axioms.")
-    print("This audit does not claim that the full affine-module spanning theorem or LowerBounds is proved.")
+    print("Scope: Tsuchioka components. For the final KR statements, run scripts/check-comparator.py.")
 
 if __name__ == "__main__":
     main()

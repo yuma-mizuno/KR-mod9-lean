@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compile the KR-only challenge submission and check its transitive axioms.
+"""Verify the main KR identities and auxiliary coefficient checks, including axioms.
 
 The Linux CI additionally runs the independent leanprover/comparator exporter.
 This local gate never counts a listed theorem as proved without checking Lean.
@@ -14,10 +14,14 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 TARGETS = {
+    # Main challenge: full Kanade-Russell identities with convergence.
     'kr₁': 'KRChallenge.KR₁',
     'kr₂': 'KRChallenge.KR₂',
     'kr₃': 'KRChallenge.KR₃',
-    'constantCoefficientNontriviality': 'KRChallenge.ConstantCoefficientNontriviality',
+    # Auxiliary checks of the independently defined products.
+    'product₁_initial_coefficients': 'KRChallenge.Product₁InitialCoefficients',
+    'product₂_initial_coefficients': 'KRChallenge.Product₂InitialCoefficients',
+    'product₃_initial_coefficients': 'KRChallenge.Product₃InitialCoefficients',
 }
 NAMES = tuple('Challenge.' + name for name in TARGETS)
 ALLOWED_AXIOMS = {'propext', 'Classical.choice', 'Quot.sound'}
@@ -75,7 +79,7 @@ def validate_config(config):
         'enable_nanoda': False,
     }
     if config != expected:
-        raise ValueError('comparator.json must select exactly the three KR statements and constant-coefficient nontriviality, with only the standard axioms')
+        raise ValueError('comparator.json must select exactly the six targets: three KR statements and three explicit product coefficient statements, with only the standard axioms')
 
 
 def target_headers(source):
@@ -85,7 +89,7 @@ def target_headers(source):
         raise ValueError('Expected exactly one namespace Challenge')
     headers = re.findall(r'^theorem (\S+)\s*:\s*(.*?)\s*:=', parts[1], re.M | re.S)
     if len(headers) != len(TARGETS) or dict(headers) != TARGETS:
-        raise ValueError('Expected exactly four closed challenge statements; no conditional or auxiliary targets')
+        raise ValueError(f'Expected exactly {len(TARGETS)} closed challenge statements; no conditional or additional targets')
     return parts[0]
 
 
@@ -103,8 +107,8 @@ def validate_sources(root):
     validate_config(json.loads(read('comparator.json')))
     challenge = read('Challenge.lean')
     validate_problem_copy(challenge, read('Comparator/Problem.lean'))
-    if len(re.findall(r'\bsorry\b', without_comments(challenge))) != 4:
-        raise ValueError('The challenge must contain exactly its four proof placeholders')
+    if len(re.findall(r'\bsorry\b', without_comments(challenge))) != len(TARGETS):
+        raise ValueError(f'The challenge must contain exactly its {len(TARGETS)} proof placeholders')
     target_headers(read('Solution.lean'))
     proofs = [root/'Solution.lean', root/'Comparator/Problem.lean',
               root/'Comparator/Submission.lean', root/'KanadeRussell.lean']
@@ -172,8 +176,9 @@ def main(argv=None):
     audit.write_text(audit_source((ROOT/'Solution.lean').read_text(encoding='utf-8-sig')), encoding='utf-8')
     output = run_checked(['lake', 'env', 'lean', str(audit.relative_to(ROOT))], out/'solution.log')
     verify_axioms(output)
-    print('Verified KR challenge: 3 original HasSum identities and nonzero constant coefficients for all 6 sides.')
-    print('All 4 targets compiled; transitive axioms: propext, Classical.choice, Quot.sound only.')
+    print('Verified main challenge: all 3 original Kanade-Russell HasSum identities.')
+    print('Verified auxiliary checks: degree-0/1/2 coefficients of all 3 products.')
+    print(f'All {len(TARGETS)} targets compiled; transitive axioms: propext, Classical.choice, Quot.sound only.')
     print('Verification logs: ' + str(out.relative_to(ROOT)))
     print('Independent exporter comparison: lake env comparator comparator.json (Linux CI).')
     return 0

@@ -5,7 +5,9 @@
     "Challenge.kr₁",
     "Challenge.kr₂",
     "Challenge.kr₃",
-    "Challenge.constantCoefficientNontriviality"
+    "Challenge.product₁_initial_coefficients",
+    "Challenge.product₂_initial_coefficients",
+    "Challenge.product₃_initial_coefficients"
   ],
   "permitted_axioms": [
     "propext",

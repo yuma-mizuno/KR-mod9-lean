@@ -1,8 +1,12 @@
 import Mathlib
 import RogersRamanujan
 
-/-! Independent statement of the three Kanade–Russell identities modulo nine.
-The formulas below are independent of the production proof. The four proof placeholders at the end are the complete challenge. -/
+/-!
+The main challenge is the three Kanade–Russell identities modulo nine:
+`KR₁`, `KR₂`, and `KR₃` assert the full double-sum/product identities with convergence.
+The initial product coefficients are auxiliary checks of the definitions.
+All formulas are stated independently of the production proof.
+-/
 set_option autoImplicit false
 open PowerSeries PowerSeries.WithPiTopology
 open scoped DiscreteUniformity
@@ -25,21 +29,32 @@ noncomputable def product₁ : PowerSeries ℤ := reciprocalProduct 1 3 6 8
 noncomputable def product₂ : PowerSeries ℤ := reciprocalProduct 2 3 6 7
 noncomputable def product₃ : PowerSeries ℤ := reciprocalProduct 3 4 5 6
 
+/-! Main statements: the three full Kanade–Russell identities. -/
 def KR₁ : Prop := HasSum (summand 0 0) product₁
 def KR₂ : Prop := HasSum (summand 1 3) product₂
 def KR₃ : Prop := HasSum (summand 2 3) product₃
 
-def ConstantCoefficientNontriviality : Prop :=
-  PowerSeries.coeff 0 (source 0 0) ≠ 0 ∧
-  PowerSeries.coeff 0 (source 1 3) ≠ 0 ∧
-  PowerSeries.coeff 0 (source 2 3) ≠ 0 ∧
-  PowerSeries.coeff 0 product₁ ≠ 0 ∧
-  PowerSeries.coeff 0 product₂ ≠ 0 ∧
-  PowerSeries.coeff 0 product₃ ≠ 0
+/-! Auxiliary checks: coefficients of each product in degrees 0, 1, and 2. -/
+def Product₁InitialCoefficients : Prop :=
+  PowerSeries.coeff 0 product₁ = 1 ∧
+  PowerSeries.coeff 1 product₁ = 1 ∧
+  PowerSeries.coeff 2 product₁ = 1
+
+def Product₂InitialCoefficients : Prop :=
+  PowerSeries.coeff 0 product₂ = 1 ∧
+  PowerSeries.coeff 1 product₂ = 0 ∧
+  PowerSeries.coeff 2 product₂ = 1
+
+def Product₃InitialCoefficients : Prop :=
+  PowerSeries.coeff 0 product₃ = 1 ∧
+  PowerSeries.coeff 1 product₃ = 0 ∧
+  PowerSeries.coeff 2 product₃ = 0
 
 end KRChallenge
 
 namespace Challenge
+
+/-! ## Main challenge: prove the three Kanade–Russell identities -/
 
 theorem kr₁ : KRChallenge.KR₁ := by
   sorry
@@ -50,7 +65,16 @@ theorem kr₂ : KRChallenge.KR₂ := by
 theorem kr₃ : KRChallenge.KR₃ := by
   sorry
 
-theorem constantCoefficientNontriviality : KRChallenge.ConstantCoefficientNontriviality := by
+/-! ## Auxiliary checks of the product definitions
+These finite coefficient statements supplement the main identities. -/
+
+theorem product₁_initial_coefficients : KRChallenge.Product₁InitialCoefficients := by
+  sorry
+
+theorem product₂_initial_coefficients : KRChallenge.Product₂InitialCoefficients := by
+  sorry
+
+theorem product₃_initial_coefficients : KRChallenge.Product₃InitialCoefficients := by
   sorry
 
 end Challenge
