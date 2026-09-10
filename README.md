@@ -32,8 +32,8 @@ norms, together with these bounds and constant terms equal to one, gives the
 three identities by coefficient rigidity.
 
 The proof is assembled in [`Theorems.lean`](KanadeRussell/Theorems.lean).
-The [Tsuchioka modules](KanadeRussell/Tsuchioka) formalize the
-representation-theoretic construction.
+The [Tsuchioka guide](KanadeRussell/Tsuchioka/README.md) describes the
+representation-theoretic construction and its source correspondence.
 
 ## Build and verify
 

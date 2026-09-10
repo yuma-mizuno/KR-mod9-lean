@@ -97,14 +97,10 @@ the verifier through `systemd-run` with an address-family restriction for
 landrun. The local checker and the export comparison are separate checks;
 the workflow run records the result of the export comparison.
 
-## Historical and numerical checks
+## Historical checks
 
 The superseded sixteen-statement specification and solution were removed
 from the working tree. Their last versions are available in Git at
 `4acc752:Comparator/KanadeRussell.lean` and
 `4acc752:Comparator/Solution.lean`. The current Comparator directory contains
-only the independent definitions, proof bridges, this guide, and the numerical
-consistency checker.
-
-`check_statements.py` checks numerical consistency of the coefficients through
-a finite cutoff.
+the independent definitions, proof bridges, and this guide.
