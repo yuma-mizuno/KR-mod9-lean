@@ -1,0 +1,111 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: KR-mod9-lean
+  description: >-
+    Lean 4 proofs of the three Kanade-Russell identities modulo nine as
+    identities of integer formal power series, including coefficientwise
+    summability of the defining double sums. The development includes concrete
+    vertex-operator spanning bounds and the character evaluations used to
+    identify the sums with their infinite products.
+  authors: ["Yuma Mizuno"]
+  responsible_maintainers: ["Yuma Mizuno"]
+  license: Apache-2.0
+
+classification:
+  arxiv: ["math.NT", "math.CO"]
+  msc2020: ["11P84", "33D15", "11F03"]
+
+sources:
+  - title: The three Kanade-Russell identities modulo nine
+    authors: ["Yuma Mizuno"]
+    id: https://arxiv.org/abs/2609.09653v1
+    type: preprint
+    location: Theorem 1.1, formal power series identities
+    relationship: formalizes
+    note: >-
+      The three identities are proved in PowerSeries Z, with HasSum statements
+      for the original double sums.
+  - title: A vertex operator reformulation of the Kanade-Russell conjecture modulo 9
+    authors: ["Shunsuke Tsuchioka"]
+    id: https://arxiv.org/abs/2211.12351v3
+    type: preprint
+    location: Sections 3-4; Theorem 1.3 and Corollary 1.4
+    relationship: adapts
+    note: >-
+      For the three concrete modules, the development proves the operator
+      relations of Theorem 3.2, the Fourier expansions of Proposition 3.3,
+      and the spanning and counting bounds of Section 4. The initial condition
+      in Section 4.10 is proved using explicit polynomial highest-weight
+      vectors instead of the crystal-basis argument. It does not formalize
+      the general ADE theory, the full five-family triple-sum statement of
+      Proposition 1.2, or Section 5 (including Theorems 5.5 and 1.5).
+      The first three mod-9 partition generating functions are identified
+      with the double sums by a separate three-state transfer argument.
+
+related_formalizations:
+  - id: https://github.com/AxiomMath/RogersRamanujan/tree/f391e2763f47243d4c252604aad65bbb2a22751a
+    relationship: builds-on
+    note: Pinned Lean dependency providing formal power series and q-series infrastructure.
+
+status:
+  scope: >-
+    Three symmetric Kanade-Russell identities modulo nine and the initial
+    coefficients of their products. Deliberate placeholders in Challenge.lean
+    specify the six comparator targets and are excluded from the sorry counts.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: ["propext", "Quot.sound", "Classical.choice"]
+
+fidelity:
+  divergences: >-
+    The concrete representation-theoretic inputs are proved within the
+    development; they are not imported as literature axioms. Tsuchioka's
+    initial-condition proof and the partition generating-function argument
+    are replaced as described above. The asymmetric Kanade-Russell identities
+    are outside scope.
+
+automation:
+  methods:
+    - method: agent
+      framework: OpenAI Codex
+      tool_setup: >-
+        Lean 4 with mathlib and the pinned RogersRamanujan dependency;
+        iterative compilation, axiom audits, and comparator checks.
+      cost:
+        wall_time: not tracked
+        spend_usd: not tracked
+      prompting_notes: >-
+        Interactive development directed by the author, with tasks covering
+        proof construction, dependency audits, and agreement with source statements.
+  spend_usd: not tracked
+  notes: >-
+    A complete inventory of model versions and a project-wide cost or time
+    record is not available; no numerical estimates are claimed here.
+
+review:
+  status: agent-reviewed
+  notes: >-
+    The development has undergone compilation, axiom audits, and checks of
+    the six comparator targets. This records machine and agent checks,
+    not independent human peer review or endorsement by Tsuchioka.
+
+alignment:
+  namespace: KanadeRussell
+  statements:
+    - source: "arXiv:2609.09653v1, Theorem 1.1, first identity"
+      lean: KanadeRussell.kanade_russell_hasSum₁
+      module: KanadeRussell.Theorems
+      status: proved
+    - source: "arXiv:2609.09653v1, Theorem 1.1, second identity"
+      lean: KanadeRussell.kanade_russell_hasSum₂
+      module: KanadeRussell.Theorems
+      status: proved
+    - source: "arXiv:2609.09653v1, Theorem 1.1, third identity"
+      lean: KanadeRussell.kanade_russell_hasSum₃
+      module: KanadeRussell.Theorems
+      status: proved
+
+acknowledgements: >-
+  Built on Lean, mathlib, and the RogersRamanujan formalization.
