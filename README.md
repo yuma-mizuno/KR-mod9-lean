@@ -20,7 +20,7 @@ The identities are formalized over `PowerSeries ℤ`. The
 theorems include convergence of the double sums in the coefficientwise topology.
 
 The formalization follows Y. Mizuno, *The three Kanade–Russell identities
-modulo nine* (2026).
+modulo nine* (2026), [arXiv:2609.09653](https://arxiv.org/abs/2609.09653).
 
 ## Proof
 
