@@ -1,13 +1,13 @@
 import KanadeRussell.Representation.FullCharacter
 
-/-! Temporary standard-module character application inputs.
+/-! Standard-module character application statements.
 
 The quotient kernel must preserve every homogeneous component and leave the
 chosen seed nonzero. Both characters are defined from the actual quotient
 grade dimensions. The two equations are the specialized standard character
-formula and the principal Heisenberg factorization. Existence of such a kernel
-includes the standard-module application, which is not proved here.
-These are propositions used as explicit theorem hypotheses, not axioms. -/
+formula and the principal Heisenberg factorization.
+The three concrete applications in `StandardCharacters` are proved by
+`KanadeRussell.standardCharacters` in Theorems.lean. -/
 namespace KanadeRussell
 open Tsuchioka Tsuchioka.Fock Representation
 variable {K : Type*} [Field K] [CharZero K]

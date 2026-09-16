@@ -1,5 +1,5 @@
 import KanadeRussell.FromStandardCharacters
-import KanadeRussell.Pending.PrincipalCharacters
+import KanadeRussell.Statements.PrincipalCharacters
 import KanadeRussell.Representation.ConcreteHeisenbergCharacter
 
 /-! The three Kanade–Russell identities from the principally specialized

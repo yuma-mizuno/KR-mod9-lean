@@ -2,8 +2,9 @@ import KanadeRussell.Representation.PrincipalHighestWeight
 import KanadeRussell.Representation.CharacterSpecialization
 import Mathlib.Analysis.Complex.Basic
 
-/-! The established principal character theorem, retained as an explicit
-universal input over complex representations and arbitrary dominant weights.
+/-! Universal principal character-formula statement over complex representations
+and arbitrary dominant weights. It is retained as an explicit hypothesis for
+FromPrincipalCharacterTheorem.lean, rather than proved in this library.
 It contains no concrete seed, Coxeter phase, or Kanade–Russell series. -/
 namespace KanadeRussell
 open Representation

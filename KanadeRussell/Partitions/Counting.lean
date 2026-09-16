@@ -1,6 +1,6 @@
 import KanadeRussell.Partitions.Generating
 import KanadeRussell.Partitions.Products
-import KanadeRussell.Pending.LowerBounds
+import KanadeRussell.Statements.LowerBounds
 set_option backward.isDefEq.respectTransparency false
 set_option maxHeartbeats 800000
 

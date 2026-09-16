@@ -1,4 +1,4 @@
-import KanadeRussell.Pending.StandardCharacters
+import KanadeRussell.Statements.StandardCharacters
 import KanadeRussell.FromLowerBounds
 import KanadeRussell.Tsuchioka.ComplexPhase
 

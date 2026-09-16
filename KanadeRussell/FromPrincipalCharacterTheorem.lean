@@ -1,5 +1,5 @@
 import KanadeRussell.FromPrincipalCharacters
-import KanadeRussell.Pending.PrincipalCharacterTheorem
+import KanadeRussell.Statements.PrincipalCharacterTheorem
 import KanadeRussell.Representation.ConcreteHighestWeight
 
 /-! The universal principal character theorem applies to the three constructed

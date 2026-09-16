@@ -1,7 +1,7 @@
 import KanadeRussell.Source.Norm
 import KanadeRussell.Rigidity
-import KanadeRussell.Pending.LowerBounds
-import KanadeRussell.Pending.ProductNorm
+import KanadeRussell.Statements.LowerBounds
+import KanadeRussell.Statements.ProductNorm
 set_option backward.isDefEq.respectTransparency false
 
 /-! Level A′: the three formal-series identities from the two recorded external inputs. -/

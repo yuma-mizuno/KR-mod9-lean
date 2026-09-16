@@ -1,6 +1,7 @@
 import KanadeRussell.Source.Defs
 
-/-! External lower-bound input P1. This proposition is a hypothesis, not an axiom. -/
+/-! Coefficient lower-bound statement, proved by `KanadeRussell.lowerBounds` in
+Theorems.lean. -/
 open PowerSeries
 namespace KanadeRussell
 

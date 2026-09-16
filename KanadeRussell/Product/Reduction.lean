@@ -1,5 +1,5 @@
 import KanadeRussell.Product.Defs
-import KanadeRussell.Pending.ProductNorm
+import KanadeRussell.Statements.ProductNorm
 
 /-! Field-free reduction of the product norm to a level-nine theta identity. -/
 namespace KanadeRussell.Product

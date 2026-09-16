@@ -38,7 +38,7 @@ theorem source_determinant : E 1 * E 3 * (Uval * Vval - Wval ^ 2) = C * a := by
     baseChange_injective (by simpa only [map_zero] using hc)
   exact sub_eq_zero.mp hi
 
-/-- The source half of `lem:equal-norms`, proved without any Pending input. -/
+/-- The source half of `lem:equal-norms`. -/
 theorem sourceNorm : E 1 * E 3 * cubicNorm A B C = a := by
   have h := source_determinant
   rw [source_determinant_factorization] at h

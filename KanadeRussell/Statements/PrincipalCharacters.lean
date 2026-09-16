@@ -1,9 +1,9 @@
 import KanadeRussell.Representation.FullCharacter
 
-/-! Temporary applications of the established principally specialized character
-formula to the three actual cyclic modules. The full characters use their actual
-finite grade dimensions; the zero quotient kernel changes no vector space.
-Heisenberg factorization is proved separately and is not an input here. -/
+/-! The three principally specialized character formulas for the actual cyclic
+modules, proved by `KanadeRussell.principalCharacterFormulas` in Theorems.lean.
+The full characters use their actual finite grade dimensions; the zero quotient
+kernel changes no vector space. Heisenberg factorization is proved separately. -/
 namespace KanadeRussell
 open Tsuchioka Tsuchioka.Fock Representation
 variable {K : Type*} [Field K] [CharZero K]
