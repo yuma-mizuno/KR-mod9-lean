@@ -249,16 +249,9 @@ Run these commands from the repository root with Lean's `lake` command and
 Python available:
 
 ```sh
-python scripts/audit-tsuchioka.py
-```
-
-The component audit builds `KanadeRussell.Tsuchioka`, scans its source files
-for proof escapes, and checks each public theorem against the axiom allowlist
-`propext`, `Classical.choice`, `Quot.sound`.
-The KR challenge, library axiom audit, and checker tests are run with:
-
-```sh
 python scripts/check-comparator.py
 python scripts/audit-axioms.py
 python scripts/test_check_comparator.py
 ```
+
+These commands run the KR challenge, library axiom audit, and checker tests.
